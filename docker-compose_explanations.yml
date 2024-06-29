@@ -1,0 +1,60 @@
+# Crétation d'un container
+version: "3.9"
+# Création de services
+services:
+  api:
+    image: fastapi:1.0.0
+# renomme le conteneur
+    container_name: my_fastapi
+# Faire suivre le port 8888 du container vers le port 4444 de la machine hôte
+    ports:
+      - target: 8888
+        published: 4444
+        protocol: tcp
+        mode: host
+# Place les containers sur le réseau my_network
+    networks:
+      - my_network
+# Définit des variable d'environnement pour l'adresse de l'API
+    environment:
+      - LOG=1
+# Renvoi le dossier /home/work du container vers le dossier present sur l'ordinateur ./local . 
+# L'adresse d'entré du container est : /home/work pour la creation/edition de fichiers.
+    volumes:
+      - ./local:/home/work
+
+  python_test_authentication:
+    # Créez votre service python ici avec les configurations nécessaires
+    build:
+      context: ./test_Authentication
+      dockerfile: Dockerfile.authentication
+# Faire suivre les ports du container vers les ports de la machine hôte (autre écriture)
+    ports:
+      - "8080:8080"
+# Sous réseau de la machine hôte (ameliore securité, facilite la communication entre containers)
+    networks:
+      - my_network
+# Definit variables d'environnement nécessaires en utilisant le mot-clef environment 
+    environment:
+      - LOG=1
+      - JUPYTER_TOKEN=bonjour
+# Le volume permet de stocker des données dans un dossier du container et de les retrouver sur l'ordinateur
+    volumes:
+      - ./local:/home/work
+    depends_on:
+      - api
+
+volumes:
+  api_logs:
+
+networks:
+  my_network:
+
+
+
+
+
+
+
+
+
